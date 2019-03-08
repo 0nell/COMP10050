@@ -17,6 +17,8 @@
 #define NUM_COLUMNS 9
 
 
+
+
 //types of squares
 enum stype{
     NORMAL, OBSTACLE };
@@ -49,7 +51,10 @@ typedef struct square{
  * such as a name and a color.
  */
 typedef struct player{
-    
+    //Colour of the player
+    enum color col;
+    //The name of the player
+    char name[10];
     
 }player; 
 
