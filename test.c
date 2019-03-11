@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <string.h>
+
+
+//This is a temporary file to test individual functions before pushing them. feel free to use
+int chooseColour(int currentPlayer, char colours[][7], char players[]);
+
+int main()
+{
+    int i=0;
+    int color;
+    char players[6][10];
+    char colours[][7] = {{"RED"}, {"BLU"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}}; 
+    
+
+    while(i< 6){
+        //Get user input of their name, o more than 10 characters for now
+        
+        printf("Player %d Please input your name: \n", i+1);
+        fgets(players[i] ,10,stdin);
+        fflush(stdin);
+        //Checks whether a carriage return symbol was provided as input
+        if(players[i][0] == '\n')
+            break;
+        
+        //Get user to input their token colour
+        
+        color = chooseColour(i, colours, players[i]);
+        printf("%s", colours[color]);
+        printf("\n");
+        
+        i++;
+    }
+    return i;
+}
+
+
+
+int chooseColour(int currentPlayer, char colours[][7], char players[])
+{
+    static int colourSelected[] = {0,0,0,0,0,0};
+    static int colourIndex;
+    int j;
+    int i;
+    int valid = 0;
+    
+    j=0;
+   
+    for(i=0;i<6;i++)
+    {
+        if(!colourSelected[i])
+        {
+            strcpy(colours[j++], colours[i]);
+        }
+    }
+    colourSelected[colourIndex] = 0;
+    
+    do
+    {
+    printf("Please enter which colour of token you want, %s", players);
+    
+    i=0;
+    for(i=0;i<6-currentPlayer;i++)
+    {
+        printf("%d for %s\n", i+1, colours[i]);
+    }
+    
+    scanf("%d", &colourIndex);
+    if(colourIndex <= 6-currentPlayer && colourIndex > 0)
+       valid = 1;
+    else
+        printf("Invalid input, pleae choose a colour that is on the screen\n");
+    }
+    while(!valid);
+    fflush(stdin);
+    colourIndex--;
+    
+    colourSelected[colourIndex] = 1;
+    
+
+    return colourIndex;
+}

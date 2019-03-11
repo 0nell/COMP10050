@@ -76,5 +76,15 @@ void initialize_board(square board[NUM_ROWS][NUM_COLUMNS]);
  */
 int initialize_players(player players[]);
 
+/*
+*   This function allows the user to choose which colour they would 
+*   Like their token to be
+*
+*   Input: the current player number(staring from 0), an array of the available colours, the player name
+*   Output: The index of the chosen colour in the colours array
+*/
+
+int chooseColour(int currentPlayer, char colours[][7], char player[]);
+
 
 
