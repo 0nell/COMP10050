@@ -7,6 +7,7 @@
 
 #include "game_init.h"
 #include <stdio.h>
+#include <string.h>
 
 
 /*
@@ -44,8 +45,9 @@ int initialize_players(player players[])
 
     int i=0;
     int color;
-    int colourSelected[] = {0,0,0,0,0,0};
-    char colours[][6] = {{"RED"}, {"BLU"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}};
+    
+    
+    
 
     while(i< 6){
         //Get user input of their name, o more than 10 characters for now
@@ -56,13 +58,8 @@ int initialize_players(player players[])
             break;
         
         //Get user to input their token colour
-        printf("%s Please enter which colour of token you want", players[i].name);
-        for(i=0;i<6;i++)
-        {
-            if(!colourSelected)
-                printf(" %d for %s", i+1, colours[i]);
-        }
-        scanf("%d",&color);
+        
+        color = chooseColour(i);
         switch(color)
         {
             case 1: players[i].col = RED;
@@ -90,6 +87,40 @@ int initialize_players(player players[])
     }
     return i;
 
+}
+
+
+int chooseColour(int currentPlayer)
+{
+    static int colourSelected[] = {0,0,0,0,0,0};
+    int colourIndex;
+    
+    int j;
+    char colours[][6] = {{"RED"}, {"BLU"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}};
+
+    printf("%s Please enter which colour of token you want", players[i].name);
+    
+    j=0;
+    for(i=0;i<6-currentPlayer;i++)
+    {
+        if(!colourSelected)
+        {
+            strcpy(colours[j++], colours[i]);
+        }
+    }
+    
+    
+    
+    while(i<j)
+    {
+        if(!colourSelected[i])
+            printf(" %d for %s", i, colours[i]);
+    }
+    scanf("%d", &colourIndex);
+
+
+
+    return colourIndex;
 }
     
    
