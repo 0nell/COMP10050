@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
-
+ char players[6][10];
 //This is a temporary file to test individual functions before pushing them. feel free to use
-int chooseColour(int currentPlayer, char colours[][7], char players[]);
+int chooseColour(int currentPlayer, char colours[][7]);
 
 int main()
 {
     int i=0;
     int color;
-    char players[6][10];
+   
     char colours[][7] = {{"RED"}, {"BLU"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}}; 
     
 
@@ -25,7 +26,7 @@ int main()
         
         //Get user to input their token colour
         
-        color = chooseColour(i, colours, players[i]);
+        color = chooseColour(i, colours);
         printf("%s", colours[color]);
         printf("\n");
         
@@ -36,30 +37,29 @@ int main()
 
 
 
-int chooseColour(int currentPlayer, char colours[][7], char players[])
+int chooseColour(int currentPlayer, char colours[][7])
 {
-    static int colourSelected[] = {0,0,0,0,0,0};
-    static int colourIndex;
+
+    static int colourIndex = -1;
     int j;
     int i;
-    int valid = 0;
+    bool valid = false;
     
     j=0;
    
     for(i=0;i<6;i++)
     {
-        if(!colourSelected[i])
+        if(i != colourIndex)
         {
             strcpy(colours[j++], colours[i]);
         }
     }
-    colourSelected[colourIndex] = 0;
+    
     
     do
     {
-    printf("Please enter which colour of token you want, %s", players);
+    printf("Please enter which colour of token you want, %s", players[currentPlayer]);
     
-    i=0;
     for(i=0;i<6-currentPlayer;i++)
     {
         printf("%d for %s\n", i+1, colours[i]);
@@ -67,15 +67,14 @@ int chooseColour(int currentPlayer, char colours[][7], char players[])
     
     scanf("%d", &colourIndex);
     if(colourIndex <= 6-currentPlayer && colourIndex > 0)
-       valid = 1;
+       valid = true;
     else
         printf("Invalid input, pleae choose a colour that is on the screen\n");
     }
     while(!valid);
     fflush(stdin);
     colourIndex--;
-    
-    colourSelected[colourIndex] = 1;
+  
     
 
     return colourIndex;

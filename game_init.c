@@ -8,6 +8,7 @@
 #include "game_init.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 
 /*
@@ -44,9 +45,9 @@ int initialize_players(player players[])
 {
 
     int i=0;
-    int color;
+    int colour;
     
-    char colours[][7] = {{"RED"}, {"BLU"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}}; 
+    char colours[][7] = {{"RED"}, {"BLUE"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}}; 
     
 
     while(i< 6)
@@ -59,31 +60,31 @@ int initialize_players(player players[])
             break;
         
         //return the chosen colour into a variable
-        
-        color = chooseColour(i, colours, players[i].name);
-        
-        //compare the chosen colour to the different options then assign the colour to the player's token
-        if(strcmp(colours[color], "RED") == 0)
-            players[i].col = RED;
-        else if (strcmp(colours[color], "BLU") == 0)
-            players[i].col = BLU;
-        else if (strcmp(colours[color], "GREEN") == 0)
-            players[i].col = GREEN;
-        else if (strcmp(colours[color], "YELLOW") == 0)
-            players[i].col = YELLOW;
-        else if (strcmp(colours[color], "PINK") == 0)
-            players[i].col = PINK;
-        else if (strcmp(colours[color], "ORANGE") == 0) 
-            players[i].col = ORANGE;
+        colour = chooseColour(i, colours, players[i].name);
 
-        printf("%s has been chosen\n", colours[color]);
+        //compare the chosen colour to the different options then assign the colour to the player's token
+        if(strcmp(colours[colour], "RED") == 0)
+            players[i].col = RED;
+        else if (strcmp(colours[colour], "BLUE") == 0)
+            players[i].col = BLU;
+        else if (strcmp(colours[colour], "GREEN") == 0)
+            players[i].col = GREEN;
+        else if (strcmp(colours[colour], "YELLOW") == 0)
+            players[i].col = YELLOW;
+        else if (strcmp(colours[colour], "PINK") == 0)
+            players[i].col = PINK;
+        else if (strcmp(colours[colour], "ORANGE") == 0) 
+            players[i].col = ORANGE;
+        else
+            printf("Error has occured in assigning colour to player, %s", players[i].name);
+
+        printf("%s has been chosen\n", colours[colour]);
                 
         i++;
     }
     return i;
 
 }
-
 
 
 /*
@@ -94,57 +95,51 @@ int initialize_players(player players[])
 *   Output: The index of the chosen colour in the colours array
 */
 
-
-
 int chooseColour(int currentPlayer, char colours[][7], char player[])
 {
-    //Index of whether or not the colour has been selected. Static so changes are saved
-    static int colourSelected[] = {0,0,0,0,0,0};
-    static int colourIndex;
-    int j;
-    int i;
-    int valid = 0;
+    //this function moves the unselected colour o the start of the array
     
-    j=0;
+    //int of the last selected colour
+    static int colourIndex = -1;
+    int i;
+    int j = 0;
+    bool valid = false;
+    int numOfChoices = 6-currentPlayer;
    
     //Moving all unchosen colours to the front of the array
     for(i=0;i<6;i++)
     {
-        if(!colourSelected[i])
+        //if the colour was selected las time the function was called, it is moved to the back of the array
+        if(i != colourIndex)
         {
             strcpy(colours[j++], colours[i]);
         }
     }
-    //resetting the chosen index because the list has been shuffled
-    colourSelected[colourIndex] = 0;
     
     do
     {
-    printf("Please enter which colour of token you want, %s", player);
-    
-    i=0;
-    //Printing options of colours to the player.
-    //Only the non chosen colours are printed
-    for(i=0;i<6-currentPlayer;i++)
-    {
-        printf("%d for %s\n", i+1, colours[i]);
-    }
-    
-    scanf("%d", &colourIndex);
-    //Checking for valid input
-    if(colourIndex <= 6-currentPlayer && colourIndex > 0)
-       valid = 1;
-    else
-        printf("Invalid input, pleae choose a colour that is on the screen\n");
+        printf("Please enter which number of the colour of token you want, %s", player);
+        
+        //Printing options of colours to the player.
+        //Only the non chosen colours(at the front of the array) are printed
+        for(i=0;i<numOfChoices;i++)
+        {
+            printf("(%d) %s\n", i+1, colours[i]);
+        }
+        
+        scanf("%d", &colourIndex);
+        //Checking for valid input
+        if(colourIndex <= numOfChoices && colourIndex > 0)
+        valid = true;
+        else
+            printf("Invalid input, pleae choose a colour that is on the screen\n");
     }
     while(!valid);
     fflush(stdin);
     //decremented because arrays start at 0
     colourIndex--;
-    //updating the chosen index
-    colourSelected[colourIndex] = 1;
-    
 
+    // return the index of the selected colour
     return colourIndex;
 }
     
