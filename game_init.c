@@ -46,7 +46,8 @@ int initialize_players(player players[])
 
     int i=0;
     int colour;
-    
+    int count;
+	
     char colours[][7] = {{"RED"}, {"BLUE"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}}; 
     
 
@@ -55,10 +56,20 @@ int initialize_players(player players[])
         //Get user input of their name, o more than 10 characters for now
         printf("Player %d Please input your name: \n", i+1);
         fgets(players[i].name,10,stdin);
+		
         //Checks whether a carriage return symbol was provided as input
         if(players[i].name[0] == '\n')
             break;
         
+		//removes the newline at the end of the name input
+		for(count=0;count<10;count++)
+		{
+			if(players[i].name[count] == '\n')
+			{
+				players[i].name[count] = '\0';
+			}
+		}
+
         //return the chosen colour into a variable
         colour = chooseColour(i, colours, players[i].name);
 
@@ -76,9 +87,9 @@ int initialize_players(player players[])
         else if (strcmp(colours[colour], "ORANGE") == 0) 
             players[i].col = ORANGE;
         else
-            printf("Error has occured in assigning colour to player, %s", players[i].name);
+            printf("Error has occured in assigning colour to player, %s\n", players[i].name);
 
-        printf("%s has been chosen\n", colours[colour]);
+        printf("%s has been chosen\n\n", colours[colour]);
                 
         i++;
     }
@@ -118,7 +129,7 @@ int chooseColour(int currentPlayer, char colours[][7], char player[])
     
     do
     {
-        printf("Please enter which number of the colour of token you want, %s", player);
+        printf("\nPlease enter which number of the colour of token you want, %s\n", player);
         
         //Printing options of colours to the player.
         //Only the non chosen colours(at the front of the array) are printed
