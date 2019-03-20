@@ -155,13 +155,5 @@ int chooseColour(int currentPlayer, char colours[][7], char player[])
 }
     
    
-void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPlayers)
-{
 
-
-
-
-
-
-}	
 

@@ -7,6 +7,7 @@
 
 #include "game_init.h"
 #include <stdio.h>
+#include <stdbool.h>
 
 void printLine();
 
@@ -74,10 +75,84 @@ void printLine(){
  *        players - the array of the players
  *        numPlayers - the number of players  
  */
-void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPlayers){
-    // TO BE IMPLEMENTED
-
-}
+void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPlayers)
+{
+	int tokens_placed; //each player gets 4 tokens
+	int person;			//counts through the players
+	int taken[6] = {0,0,0,0,0,0};		//value set to 0 if that point on the level is free and 1 if it is taken
+	int previous[6];			//value in the locations previous[0-5] correspond to rows 0-5 and contain the colourindex previosuly placed in that row
+	int choice, i;				//choice contains the users choice of row to place their token, i is used as a counter
+	bool valid = false;			//valid checks whether a choice is valid and on the list
+	bool reset = false;			//reset resets the taken array after the level becomes full
+	char colours[][7] = {{"RED"}, {"BLUE"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}}; //colours corresponding to colourindex
+	
+	for(tokens_placed=0;tokens_placed < 4;tokens_placed++)  	//iterates through the tokens placed (4 times)
+	{
+		for(person=0;person<numPlayers;person++)	//iterates through the players
+		{
+			printf("Please enter the number row you would like to place your token in %s\n", players[person].name);
+			valid = false;	//resets valid bool to false
+			
+			while(!valid)	//iterates until a valid choice is given
+			{
+				int full = 0;	//used to check whether taken[] contais all 1's
+				reset = false;	//resets reset bool to false
+				
+				for(i=0;i<6;i++)	//iterates through taken[]
+				{
+					if(taken[i] == 1) //each time 1 is the value, full iterates
+					{
+						full++;
+					}
+				}
+				
+				if(full == 6) //if every value in taken[] is 1
+				{
+					reset = true; //reset is set to true
+				}
+				
+				for(i=0;i<6;i++) //iterates through taken[]
+				{
+					if(reset) //if reset is set to true
+					{
+						taken[i] = 0; //each value in taken is set to 0
+					}
+					
+					if(taken[i] == 0 && previous[i] != players[person].col) //if the value at that level is free and the previous token is not of the same colour
+					{
+						printf("(%d) ROW %d\n", i, i); //prints the rows which can be chosen
+					}
+				}
+				
+				scanf("%d", &choice); //takes input of  the users choice
+				
+				if(choice < 0 || choice > 6 || taken[choice] == 1) //if the choice is invalid
+				{
+					printf("Choice is not valid, please enter a number shown above\n");
+				}
+				else if(previous[choice] == players[person].col) //if the choice points to a location where the previous is the same as the user who is currently choosing's token
+				{
+					printf("You cannot place a token there as the previous token is the same colour\n");
+				}
+				else //valid choice
+				{
+					printf("%s token placed in row %d\n", colours[players[person].col], choice); //tells user which row/colour it was placed in
+					taken[choice] = 1;		//taken array at that location set to 1, at current level this spacce is now taken
+					previous[choice] = players[person].col;		//sets the previous array at that location to the colourindex of the token placed there
+					/******************************************************************************************************************
+					
+						Obviously i need to actually place the tokens using stacks in this current position, this is just the skeleton
+						code for the function which shows the user interface end, the actual placement of tokens is yet to come.
+						I'll need to change the colour for token aswell in the player things if necessary but i feel like im confused
+						as to how to place the tokens atm, so its best to leave it fr now.
+						
+					*******************************************************************************************************************/
+					valid = true;			//exits loop as valid choice entered
+				}
+			}
+		}
+	}
+}	
 
 
 /*
