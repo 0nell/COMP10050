@@ -77,7 +77,7 @@ int initialize_players(player players[])
         if(strcmp(colours[colour], "RED") == 0)
             players[i].col = RED;
         else if (strcmp(colours[colour], "BLUE") == 0)
-            players[i].col = BLU;
+            players[i].col = BLUE;
         else if (strcmp(colours[colour], "GREEN") == 0)
             players[i].col = GREEN;
         else if (strcmp(colours[colour], "YELLOW") == 0)
@@ -155,5 +155,13 @@ int chooseColour(int currentPlayer, char colours[][7], char player[])
 }
     
    
-     
+void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPlayers)
+{
+
+
+
+
+
+
+}	
 
