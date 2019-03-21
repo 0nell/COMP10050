@@ -52,7 +52,7 @@ typedef struct square{
  */
 typedef struct player{
     //Colour of the player
-    enum color col;
+    token tkn;
     //The name of the player
     char name[10];
     

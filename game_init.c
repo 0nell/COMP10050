@@ -75,17 +75,17 @@ int initialize_players(player players[])
 
         //compare the chosen colour to the different options then assign the colour to the player's token
         if(strcmp(colours[colour], "RED") == 0)
-            players[i].col = RED;
+            players[i].tkn.col = RED;
         else if (strcmp(colours[colour], "BLUE") == 0)
-            players[i].col = BLUE;
+            players[i].tkn.col = BLUE;
         else if (strcmp(colours[colour], "GREEN") == 0)
-            players[i].col = GREEN;
+            players[i].tkn.col = GREEN;
         else if (strcmp(colours[colour], "YELLOW") == 0)
-            players[i].col = YELLOW;
+            players[i].tkn.col = YELLOW;
         else if (strcmp(colours[colour], "PINK") == 0)
-            players[i].col = PINK;
+            players[i].tkn.col = PINK;
         else if (strcmp(colours[colour], "ORANGE") == 0) 
-            players[i].col = ORANGE;
+            players[i].tkn.col = ORANGE;
         else
             printf("Error has occured in assigning colour to player, %s\n", players[i].name);
 

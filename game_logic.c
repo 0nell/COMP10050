@@ -118,7 +118,7 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 						taken[i] = 0; //each value in taken is set to 0
 					}
 					
-					if(taken[i] == 0 && previous[i] != players[person].col) //if the value at that level is free and the previous token is not of the same colour
+					if(taken[i] == 0 && previous[i] != players[person].tkn.col) //if the value at that level is free and the previous token is not of the same colour
 					{
 						printf("(%d) ROW %d\n", i, i); //prints the rows which can be chosen
 					}
@@ -130,23 +130,35 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 				{
 					printf("Choice is not valid, please enter a number shown above\n");
 				}
-				else if(previous[choice] == players[person].col) //if the choice points to a location where the previous is the same as the user who is currently choosing's token
+				else if(previous[choice] == players[person].tkn.col) //if the choice points to a location where the previous is the same as the user who is currently choosing's token
 				{
 					printf("You cannot place a token there as the previous token is the same colour\n");
 				}
 				else //valid choice
 				{
-					printf("%s token placed in row %d\n", colours[players[person].col], choice); //tells user which row/colour it was placed in
+					printf("%s token placed in row %d\n", colours[players[person].tkn.col], choice); //tells user which row/colour it was placed in
 					taken[choice] = 1;		//taken array at that location set to 1, at current level this spacce is now taken
-					previous[choice] = players[person].col;		//sets the previous array at that location to the colourindex of the token placed there
-					/******************************************************************************************************************
+					previous[choice] = players[person].tkn.col;		//sets the previous array at that location to the colourindex of the token placed there
 					
-						Obviously i need to actually place the tokens using stacks in this current position, this is just the skeleton
-						code for the function which shows the user interface end, the actual placement of tokens is yet to come.
-						I'll need to change the colour for token aswell in the player things if necessary but i feel like im confused
-						as to how to place the tokens atm, so its best to leave it fr now.
+					if(board[choice][0].stack == NULL)
+					{
+						board[choice][0].stack = &players[person].tkn;
+					}
+					
+					else if(board[choice][0].stack != NULL)
+					{
+						for(i=0;i<3;i++)
+						{
+							*(board[choice][0].stack + (i+1)) = *(board[choice][0].stack + i);
+						}
 						
+						board[choice][0].stack = &players[person].tkn;
+					}
+					/******************************************************************************************************************
+					Need to double check whether a stack is actually being made,also bug where name stops being printed for person and 
+					is instead printed as a ? after a few iterations
 					*******************************************************************************************************************/
+					print_board(board);
 					valid = true;			//exits loop as valid choice entered
 				}
 			}
