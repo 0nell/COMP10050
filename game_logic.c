@@ -85,6 +85,9 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 	bool valid = false;			//valid checks whether a choice is valid and on the list
 	bool reset = false;			//reset resets the taken array after the level becomes full
 	char colours[][7] = {{"RED"}, {"BLUE"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}}; //colours corresponding to colourindex
+	token * storage[6][4];	//VERY IMPORTANT, THIS STORES THE STACKS OF TOKENS (TOKEN POINTERS)
+	char a;	//USED TO PRINT THE TOKENS IN THE DEBUG PROCESS
+	int complete = 0; //THE AMOUNT OF COMPLETE LEVELS OF TOKENS
 	
 	for(tokens_placed=0;tokens_placed < 4;tokens_placed++)  	//iterates through the tokens placed (4 times)
 	{
@@ -108,6 +111,7 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 				
 				if(full == 6) //if every value in taken[] is 1
 				{
+					complete++; //AMOUNT OF COMPLETE LEVELS ITERATED BY 1
 					reset = true; //reset is set to true
 				}
 				
@@ -142,23 +146,33 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 					
 					if(board[choice][0].stack == NULL)
 					{
-						board[choice][0].stack = &players[person].tkn;
+						printf("1\n"); //THIS WAS JUST T SEE WHICH OPTION WAS RUN IN THE DEBUG PROCESS
+						board[choice][0].stack = &players[person].tkn; //ITEM SHOWN IN THE BOARD POINTER IS SET TO THE TOKEN OF THE PLAYER WHO CHOSE IT
+						storage[choice][0] = &players[person].tkn; //TOKEN ADDED TO THE BOTTOM OF THE STACK
 					}
 					
 					else if(board[choice][0].stack != NULL)
 					{
-						for(i=0;i<3;i++)
+						printf("2\n");   //THIS WAS JUST TO SEE WHICH OPTION WAS RUN IN THE DEBUG PROCESS
+						
+						for(i=complete;i>0;i--) //MOVES THE ITEMS IN THE STACK UP ONE FOR A NEW THING TO BE PUSHED AT THE BOTTOM
 						{
-							*(board[choice][0].stack + (i+1)) = *(board[choice][0].stack + i);
+							storage[choice][i] = storage[choice][i-1]; 
 						}
 						
-						board[choice][0].stack = &players[person].tkn;
+						board[choice][0].stack = &players[person].tkn; //ITEM SHOWN IN THE BOARD POINTER IS SET TO THE TOKEN OF THE PLAYER WHO CHOSE IT
+						storage[choice][0] = &players[person].tkn;	   //TOKEN ADDED TO THE BOTTOM OF THE STACK
+						
+						for(i=0;i<complete+1;i++)					//SIMPLY DESIGN DEBUG FEATURE TO VIEW THE STACK AFTER PLACEMENT OF NEW TOKEN
+						{
+							a = print_token(storage[choice][i]);
+							printf("%c\n", a);
+						}
 					}
 					/******************************************************************************************************************
-					Need to double check whether a stack is actually being made,also bug where name stops being printed for person and 
-					is instead printed as a ? after a few iterations
+							ASK ABOUT THE NO CHOICE BUT TO STACK GREEN ON GREEN BASIC DESIGN FLAW OF THE GAME
 					*******************************************************************************************************************/
-					print_board(board);
+					print_board(board);	//PRINTS THE BOARD SO PLAYER CAN VIEW IT
 					valid = true;			//exits loop as valid choice entered
 				}
 			}

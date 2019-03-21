@@ -40,7 +40,7 @@ typedef struct square{
     //A square can be a NORMAL or an OBSTACLE square
      enum stype type;
      //the stack of tokens that can be placed on the board square
-     token * stack;      
+     token  *stack;      
 }square;
 
 
@@ -51,11 +51,10 @@ typedef struct square{
  * such as a name and a color.
  */
 typedef struct player{
+     //The name of the player
+    char name[10];
     //Colour of the player
     token tkn;
-    //The name of the player
-    char name[10];
-    
 }player; 
 
 
