@@ -116,7 +116,9 @@ int chooseColour(int currentPlayer, char colours[][7], char player[])
     int j = 0;
     bool valid = false;
     int numOfChoices = 6-currentPlayer;
-   
+    char check[10];
+	char c;
+	
     //Moving all unchosen colours to the front of the array
     for(i=0;i<6;i++)
     {
@@ -138,7 +140,11 @@ int chooseColour(int currentPlayer, char colours[][7], char player[])
             printf("(%d) %s\n", i+1, colours[i]);
         }
         
-        scanf("%d", &colourIndex);
+        //scanf("%d", &colourIndex);
+		fgets(check,9,stdin);  		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
+		c = check[0];
+		colourIndex = c - '0';
+					
         //Checking for valid input
         if(colourIndex <= numOfChoices && colourIndex > 0)
         valid = true;

@@ -88,26 +88,29 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 	char colours[][7] = {{"RED"}, {"BLUE"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}}; //colours corresponding to colourindex
 	char a;	//USED TO PRINT THE TOKENS IN THE DEBUG PROCESS
 	int complete = 0; //THE AMOUNT OF COMPLETE LEVELS OF TOKENS
-	bool choices;
-	int tokens = 0;
+	bool choices;	//used to check whether the exception to the lowest level rule is needed
+	int tokens = 0;	//used to count how many tokens have been placed
+	char check[10];
+	char c;
+	
 	for(tokens_placed=0;tokens_placed < 4;tokens_placed++)  	//iterates through the tokens placed (4 times)
 	{
-		for(person=0;person<numPlayers;person++)	//iterates through the players
+		for(person=0;person<numPlayers;person++)				//iterates through the players
 		{
 			printf("Please enter the number row you would like to place your token in %s\n", players[person].name);
 			valid = false;	//resets valid bool to false
 			
 			
-			while(!valid)	//iterates until a valid choice is given
+			while(!valid)			//iterates until a valid choice is given
 			{
-				valid2 = false;
-				choices = false;
+				valid2 = false;		//resets valid2 bool to false
+				choices = false;	//resets choices bool to false
 				int full = 0;	//used to check whether taken[] contais all 1's
 				reset = false;	//resets reset bool to false
 				
 				for(i=0;i<6;i++)	//iterates through taken[]
 				{
-					if(taken[i] >= 1 ) //each time 1 is the value, full iterates
+					if(taken[i] >= 1 ) //each time 1 or 2 is the value, full iterates
 					{
 						full++;
 					}
@@ -123,27 +126,32 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 				{
 					if(reset) //if reset is set to true
 					{
-						if(taken[i] == 2)
+						if(taken[i] == 2) //if any value in taken is set to 2 that means there is already a token in this higher level at that point, meaning it should be reset to 1 for this new level
 						{
 							taken[i] = 1;
 						}
-						else
+						else	
 						{
-						taken[i] = 0; //each value in taken is set to 0
+						taken[i] = 0; //each value in taken is set to 0 as there are no tokens placed in this location at this new higher level
 						}
 					}
 					
 					if(taken[i] == 0 && previous[i] != players[person].tkn.col) //if the value at that level is free and the previous token is not of the same colour
 					{
-						choices = true;
+						choices = true;		//the exception to the lowest level rule will not be triggered
 						printf("(%d) ROW %d\n", i, i); //prints the rows which can be chosen
 					}
 				}
 				
-				if(choices)
+				if(choices)	//if the exception to the lowest level rule is not triggered
 				{
-					scanf("%d", &choice); //takes input of  the users choice
-					if(choice < 0 || choice > 6 || taken[choice] == 1) //if the choice is invalid
+					//scanf("%d", &choice); 								//takes input of  the users choice
+					fgets(check,9,stdin); 		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
+					c = check[0];
+					choice = c - '0';
+					
+					
+					if(choice < 0 || choice > 6 || taken[choice] == 1)  //if the choice is invalid (aka not 0-5 or there is a token in that location of that level)
 					{
 						printf("Choice is not valid, please enter a number shown above\n");
 					}
@@ -151,14 +159,14 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 					{
 						printf("You cannot place a token there as the previous token is the same colour\n");
 					}
-					else
+					else				//is a valid choice
 					{
-						valid2 = true;
+						valid2 = true; 	//valid2 is set to true
 					}
 				}
-				else if (!choices)
+				else if (!choices) //if the exception to the rule is triggered a person can place their token only a location where taken[] is equal to one and is a location where the previous token is not the same colour
 				{
-					printf("\nPlacing token on a higher level as you cannot place it on your your own token\n");
+					printf("\nPlacing token on a higher level as you cannot place it on your your own token\n"); //informs the user that there token is being placed on a higher level
 					
 					for(i=0;i<6;i++) //iterates through taken[]
 					{
@@ -167,8 +175,13 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 							printf("(%d) ROW %d\n", i, i); //prints the rows which can be chosen
 						}
 					}
-					scanf("%d", &choice); //takes input of  the users choice
-					if(choice < 0 || choice > 6 || taken[choice] == 0) //if the choice is invalid
+					
+					//scanf("%d", &choice); //takes input of  the users choice
+					fgets(check,9,stdin);		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
+					c = check[0];
+					choice = c - '0';
+					
+					if(choice < 0 || choice > 6 || taken[choice] == 0) //if the choice is invalid(aka chhoice is not 0-5 or is not taken
 					{
 						printf("Choice is not valid, please enter a number shown above\n");
 					}
@@ -185,14 +198,16 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 				if(valid2)
 				{					
 					printf("%s token placed in row %d\n", colours[players[person].tkn.col], choice); //tells user which row/colour it was placed in
-					if(choices)
+					
+					if(choices)			//IF THE EXCEPTION TO THE RULE HAS NOT BEEN TRIGGERED
 					{
 						taken[choice] = 1;	//taken array at that location set to 1, at current level this spacce is now taken
 					}					
-					else
+					else				//IF THE EXCEPTION TO THE RULE HAS BEEN TRIGGERED
 					{
-						taken[choice] = 2;
+						taken[choice] = 2;	//TAKEN IS SET TO 2 TO INDICATE THAT THERE IS A TOKEN ON THE HIGHER LEVEL
 					}
+					
 					previous[choice] = players[person].tkn.col;		//sets the previous array at that location to the colourindex of the token placed there
 					
 					if(board[choice][0].stack[0] == NULL)
@@ -204,9 +219,10 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 					else if(board[choice][0].stack[0] != NULL)
 					{
 						printf("2\n");   //THIS WAS JUST TO SEE WHICH OPTION WAS RUN IN THE DEBUG PROCESS
-						if(!choices)
+						
+						if(!choices)	//IF THE EXCEPTION HAS BEEN TRIGGERED
 						{
-							complete++;
+							complete++;	//COMPLETE IS TEMPORARILY INCREMENTED BY ONE SO THAT THE STACK MOVES EVERYTHING UP IN THE CORRECT WAY
 						}
 						
 						for(i=complete;i>0;i--) //MOVES THE ITEMS IN THE STACK UP ONE FOR A NEW THING TO BE PUSHED AT THE BOTTOM
@@ -222,17 +238,15 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 							printf("%c\n", a);
 						}
 					}
-					/******************************************************************************************************************
-							-ASK ABOUT THE NO CHOICE BUT TO STACK GREEN ON GREEN BASIC DESIGN FLAW OF THE GAME
-					*******************************************************************************************************************/
-					if(!choices)
+					
+					if(!choices) //IF THE EXCEPTION TO THE RULE HAS BEEN TRIGGERED
 					{
-						complete--;
+						complete--;	//DECREMENTS THE COMPLETE INTEGER SO THAT THE TEMPORARY INCREASE IS ENDED FOR THE NEXT TOKEN PLACEMENT
 					}
-					print_board(board);	//PRINTS THE BOARD SO PLAYER CAN VIEW IT
-					valid = true;			//exits loop as valid choice entered
-					tokens++;
-					printf("%d tokens placed\n", tokens);
+					print_board(board);						//PRINTS THE BOARD SO PLAYER CAN VIEW IT
+					valid = true;							//exits loop as valid choice entered
+					tokens++;								//COUNTS THE AMOUNT OF TOKENS PLACED
+					printf("%d tokens placed\n", tokens);	//PRINTS THE AMOUNT OF TOKENS PLACED
 				}
 			}
 				
