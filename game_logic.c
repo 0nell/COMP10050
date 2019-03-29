@@ -145,10 +145,13 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 				
 				if(choices)	//if the exception to the lowest level rule is not triggered
 				{
-					//scanf("%d", &choice); 								//takes input of  the users choice
-					fgets(check,9,stdin); 		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
+					fgets(check,9,stdin);		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
 					c = check[0];
 					choice = c - '0';
+					if(check[1] != '\n' && check[1] != ' ') //aka if they enter eg. 1d, 123, 33 etc
+					{
+						choice += 100;		//makes it so that its an invalid answer
+					}
 					
 					
 					if(choice < 0 || choice > 6 || taken[choice] == 1)  //if the choice is invalid (aka not 0-5 or there is a token in that location of that level)
@@ -180,6 +183,11 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 					fgets(check,9,stdin);		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
 					c = check[0];
 					choice = c - '0';
+					if(check[1] != '\n' && check[1] != ' ') //aka if they enter eg. 1d, 123, 33 etc
+					{
+						choice += 100;		//makes it so that its an invalid answer
+					}
+					
 					
 					if(choice < 0 || choice > 6 || taken[choice] == 0) //if the choice is invalid(aka chhoice is not 0-5 or is not taken
 					{
