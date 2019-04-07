@@ -17,8 +17,8 @@
  * Input: board - a 6x9 array of squares
  *
  */
-void initialize_board(square board[NUM_ROWS][NUM_COLUMNS]){
-   
+void initialize_board(square board[NUM_ROWS][NUM_COLUMNS])
+{
     for (int i =0; i< NUM_ROWS; i++){
         for(int j =0; j < NUM_COLUMNS; j++){
             //creates an obstacle square at positions (0,3), (1,6), (2,4), (3,5), (4,2) and (5,7)
@@ -29,7 +29,8 @@ void initialize_board(square board[NUM_ROWS][NUM_COLUMNS]){
                 //creates a normal square otherwise
                 board[i][j].type = NORMAL;
             }
-            board[i][j].stack[0] = NULL;
+            board[i][j].stack = NULL;
+            board[i][j].numTokens = 0;
         }
     }
 }
@@ -54,7 +55,7 @@ int initialize_players(player players[])
     while(i< 6)
     {
         //Get user input of their name, o more than 10 characters for now
-        printf("Player %d Please input your name: \n", i+1);
+        printf("Player %d Please input your name, press enter after the last user: \n", i+1);
         fgets(players[i].name,10,stdin);
 		
         //Checks whether a carriage return symbol was provided as input
@@ -75,17 +76,17 @@ int initialize_players(player players[])
 
         //compare the chosen colour to the different options then assign the colour to the player's token
         if(strcmp(colours[colour], "RED") == 0)
-            players[i].tkn.col = RED;
+            players[i].col = RED;
         else if (strcmp(colours[colour], "BLUE") == 0)
-            players[i].tkn.col = BLUE;
+            players[i].col = BLUE;
         else if (strcmp(colours[colour], "GREEN") == 0)
-            players[i].tkn.col = GREEN;
+            players[i].col = GREEN;
         else if (strcmp(colours[colour], "YELLOW") == 0)
-            players[i].tkn.col = YELLOW;
+            players[i].col = YELLOW;
         else if (strcmp(colours[colour], "PINK") == 0)
-            players[i].tkn.col = PINK;
+            players[i].col = PINK;
         else if (strcmp(colours[colour], "ORANGE") == 0) 
-            players[i].tkn.col = ORANGE;
+            players[i].col = ORANGE;
         else
             printf("Error has occured in assigning colour to player, %s\n", players[i].name);
 
