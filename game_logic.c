@@ -206,24 +206,116 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 
 
 
-/*
- * Place tokens in the first column of the board
+/* 
+ *  * Manages the logic of the game
  * 
  * Input: board - a 6x9 array of squares that represents the board
  *        players - the array of the players
- *        numPlayers - the number of players  
+ *        numPlayers - the number of players 
  */
 
 void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPlayers)
 {
+	int dice;
+	int person = 0;
+	char movePiece;
+	int i, j;
+	int row, column;
+	int direction;
+	bool validChoice;
+	
 	srand(time(NULL));
 	printf("\n");
 	printLine();
 	printf("               GAME START                  \n");
 	printLine();
 
-	printf("Would you like to move one your pieces(Y/N");
+	print_board(board);
+	printf("Game squares are represented as (row,column)\n");
+	dice = rand()%6+1;
+	printf("%s has rolled %d\n",players[person].name, dice);
 	
+	
+	printf("Would you like to move one your pieces up or down?(Y/N)\n");
+	scanf("%c", &movePiece);
+	if(movePiece == 'y' || movePiece == 'Y')
+	{
+		printf("Select which piece you would like to move\n");
+		for(i=0;i<6;i++)
+		{
+			for(j=0;j<9;j++)
+			{
+				if(board[i][j].stack != NULL)
+				{
+					if(board[i][j].stack->col == players[person].col)
+					{
+						printf("(%d,%d)\n", i, j);
+					}
+				}
+				
+			}
+		}
+		
+		validChoice = false;
+		while(!validChoice)
+		{
+			printf("Enter row number\n");
+			scanf("%d", &row);
+			printf("Enter column number\n");
+			scanf("%d", &column);
+
+			if(board[row][column].stack != NULL)
+				{
+					printf("This square is empty, try again\n");
+					continue;
+				}
+
+			else if(board[row][column].stack->col != players[person].col)
+				{
+					printf("Your token is not on top of this square\n");
+					continue;
+				}
+			else
+				validChoice = true;
+		}
+			validChoice = false;
+
+		while(!validChoice)	
+		{
+			printf("Would you like to move up or down\n");
+			printf("(1)Up\n(2)Down\n");
+			scanf("%d", &direction);
+			switch(direction)
+			{
+				case 1: direction = -1;
+					break;
+				case 2: direction = 1;
+					break;
+				default: direction = 6;
+					break;
+			}
+		
+			if(i+direction > 5 || i+direction < 0)
+				continue;
+			else
+				validChoice = true;
+		}
+
+
+		struct token *curr = board[row+direction][column].stack;
+		board[row+direction][column].stack = malloc(sizeof(token));
+		board[row+direction][column].stack->col = players[person].col;
+		board[row+direction][column].stack->next = curr;  
+		
+		struct token *curre = board[row][column].stack;
+		if(curre!=NULL)
+		{
+			board[row][column].stack = curre->next;
+			free(curre);
+		}
+		printf("%s has moved a piece from (%d,%d) to (%d,%d)", players[person].name, row, column, row+direction, column);
+		print_board(board);
+	}
 }
 
 
