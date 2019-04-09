@@ -225,6 +225,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 	bool validChoice;
 	bool finished = false;
 	bool check = true;
+	bool possible = false;
 	int choice;
 	int obs[8];
 	
@@ -233,41 +234,18 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 	printLine();
 	printf("               GAME START                  \n");
 	printLine();
+	print_board(board);
 	
 	while(!finished)
 	{
-		print_board(board);
 		printf("Game squares are represented as (row,column)\n");
-		
-		validChoice = false;
-		while(!validChoice)
-		{	
-			dice = rand()%6;
-			check = true;
-			for(j=0;j<8;j++)
-			{
-				if(board[dice][j].stack != NULL)
-				{
-					check = false;
-				}
-				if(dice == 0)
-				{
-					if(board[dice+1]
-			}
-			
-			if(!check)
-			{
-				validChoice;
-			}
-		}
-				
-				
+		dice = rand()%6;		
 		printf("%s has rolled row %d\n",players[person].name, dice);
 		
 		fflush(stdin);
 		printf("Would you like to move one your pieces up or down?(Y/N)\n");
 		scanf("%c", &movePiece);
-		
+		possible = false;
 		
 		if(movePiece == 'y' || movePiece == 'Y')
 		{
@@ -276,17 +254,22 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 			{
 				for(j=0;j<8;j++)
 				{
-					if(board[i][j].stack != NULL)
+					if(board[i][j].stack != NULL && board[i][j].type != OBSTACLE)
 					{
 						if(board[i][j].stack->col == players[person].col)
 						{
 							printf("(%d,%d)\n", i, j);
+							possible = true;
 						}
 					}
 					
 				}
 			}
 			
+			if(!possible)
+			{
+				printf("Whelp -_- looks like you cant even move anything if you try.\nBetter luck next time\n");
+			}
 			validChoice = false;
 			while(!validChoice)
 			{
@@ -296,16 +279,21 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 				scanf("%d", &column);
 
 				if(board[row][column].stack == NULL)
-					{
-						printf("This square is empty, try again\n");
-						continue;
-					}
-
+				{
+					printf("This square is empty, try again\n");
+					continue;
+				}
+				else if(board[i][j].type == OBSTACLE)
+				{
+					puts("This token is stuck in an obstacle and cannot yet be moved");
+					continue;
+				}
 				else if(board[row][column].stack->col != players[person].col)
 					{
 						printf("Your token is not on top of this square\n");
 						continue;
 					}
+					
 				else
 					validChoice = true;
 			}
@@ -352,67 +340,95 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 			print_board(board);
 		}
 		
+		possible = false;
+		for(j=0;j<8;j++)
+		{
+			if(board[dice][j].stack != NULL)
+			{
+				if(board[dice][j].type != OBSTACLE)
+				{
+					possible = true;
+				}
+			}
+		}
+		
 		validChoice = false;
 		
-		while(!validChoice)	
-			{
-				printf("Please choose the location of token that you want to move forward\n");
-				
-				for(i=0;i<8;i++)
+		if(!possible)
+		{
+			printf("Sorry no move can be made on that row :((\nBetter luck next time");
+		}
+		else
+		{
+			while(!validChoice)	
 				{
-					if(board[dice][i].stack != NULL && board[dice][i].type != OBSTACLE)
+					printf("Please choose the location of token that you want to move forward\n");
+					
+					for(i=0;i<8;i++)
 					{
-						printf("(%d,%d)\n", dice, i);
+						if(board[dice][i].stack != NULL && board[dice][i].type != OBSTACLE)
+						{
+							printf("(%d,%d)\n", dice, i);
+						}
+					}
+					
+					printf("Please enter the column number of the selected token\n");
+					scanf("%d", &choice);
+					
+					if(choice < 0 || choice > 7)
+					{
+						puts("ERROR INVALID INPUT :choice is not a square on the board\n");
+					}
+					else if(board[dice][choice].stack == NULL)
+					{
+						puts("ERROR INVALID INPUT :square chosen is empty\n");
+					}
+					else if(board[dice][choice].type == OBSTACLE)
+					{
+						puts("ERROR INVALID INPUT :square chosen is still an obstacle square\n");
+					}
+					else
+					{
+						validChoice = true;
 					}
 				}
 				
-				printf("Please enter the column number of the selected token\n");
-				scanf("%d", &choice);
 				
-				if(choice < 0 || choice > 7)
+				struct token *curr = board[dice][choice+1].stack;
+				board[dice][choice+1].stack = malloc(sizeof(token));
+				board[dice][choice+1].stack->col = board[dice][choice].stack->col;
+				board[dice][choice+1].stack->next = curr;
+				
+				struct token *curre = board[dice][choice].stack;
+				if(curre!=NULL)
 				{
-					puts("ERROR INVALID INPUT :choice is not a square on the board\n");
+					board[dice][choice].stack = curre->next;
+					free(curre);
 				}
-				else if(board[dice][choice].stack == NULL)
+				
+				if((choice+1) == 8)
 				{
-					puts("ERROR INVALID INPUT :square chosen is empty\n");
+					for(i=0;i<numPlayers;i++)
+					{
+						if(players[i].col == board[dice][choice+1].stack->col)
+						{
+							players[i].numTokensLastCol += 1;
+						}
+						if(players[i].numTokensLastCol == 3)
+						{
+							finished = true;
+						}
+					}
 				}
-				else if(board[dice][choice].type == OBSTACLE)
+				
+				if(players[person].numTokensLastCol == 3)
 				{
-					puts("ERROR INVALID INPUT :square chosen is still an obstacle square\n");
+					finished = true;
 				}
-				else
-				{
-					validChoice = true;
-				}
-			}
-			
-			
-			struct token *curr = board[dice][choice+1].stack;
-			board[dice][choice+1].stack = malloc(sizeof(token));
-			board[dice][choice+1].stack->col = players[person].col;
-			board[dice][choice+1].stack->next = curr;
-			
-			struct token *curre = board[dice][choice].stack;
-			if(curre!=NULL)
-			{
-				board[dice][choice].stack = curre->next;
-				free(curre);
-			}
-			
-			if((i+1) == 8)
-			{
-				 players[person].numTokensLastCol += 1;
-			}
-			
-			if(players[person].numTokensLastCol == 3)
-			{
-				finished = true;
-			}
-			
-			printf("%s has moved their piece from (%d,%d) to (%d,%d)\n", players[person].name, row, column, row+direction, column);
-			print_board(board);
-			
+				
+				printf("%s has moved their piece from (%d,%d) to (%d,%d)\n", players[person].name, row, column, row+direction, column);
+				print_board(board);
+		}
 			if(person < numPlayers - 1)
 			{
 				person++;
