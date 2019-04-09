@@ -264,7 +264,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 			printf("Enter column number\n");
 			scanf("%d", &column);
 
-			if(board[row][column].stack != NULL)
+			if(board[row][column].stack == NULL)
 				{
 					printf("This square is empty, try again\n");
 					continue;
@@ -295,8 +295,11 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 					break;
 			}
 		
-			if(i+direction > 5 || i+direction < 0)
-				continue;
+			if(row+direction > 5 || row+direction < 0)
+				{
+					printf("Cant move there, outside the board\n");
+					continue;
+				}
 			else
 				validChoice = true;
 		}
@@ -313,16 +316,12 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 			board[row][column].stack = curre->next;
 			free(curre);
 		}
-		printf("%s has moved a piece from (%d,%d) to (%d,%d)", players[person].name, row, column, row+direction, column);
+		printf("%s has moved a piece from (%d,%d) to (%d,%d)\n", players[person].name, row, column, row+direction, column);
 		print_board(board);
 	}
 }
 
 
-int diceRoll()
-{
-	return rand()%6+1;
-}
 
 /*pop
 struct token *curr = board[4][0].stack;
