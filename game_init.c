@@ -62,6 +62,7 @@ int initialize_players(player players[])
         if(players[i].name[0] == '\n')
             break;
         
+		players[i].numTokensLastCol = 0;
 		//removes the newline at the end of the name input
 		for(count=0;count<10;count++)
 		{
