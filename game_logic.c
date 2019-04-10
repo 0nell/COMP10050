@@ -356,7 +356,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 		
 		if(!possible)
 		{
-			printf("Sorry no move can be made on that row :((\nBetter luck next time");
+			printf("Sorry no move can be made on that row :((\nBetter luck next time\n");
 		}
 		else
 		{
@@ -419,11 +419,6 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 							finished = true;
 						}
 					}
-				}
-				
-				if(players[person].numTokensLastCol == 3)
-				{
-					finished = true;
 				}
 				
 				printf("%s has moved their piece from (%d,%d) to (%d,%d)\n", players[person].name, row, column, row+direction, column);
