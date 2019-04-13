@@ -205,6 +205,27 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 }
 
 
+/*
+ * Checks to make sure integer input is valid and doesn't cause an infinite loop
+ * 
+ * Output: the user input
+ */
+
+int checkInput()
+{
+	fflush(stdin); // flushing the input buffer
+	int container;
+	char check[10];
+	char c;
+	fgets(check,9,stdin);		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
+		c = check[0];
+		container = c - '0';
+		if(check[1] != '\n' && check[1] != ' ') //aka if they enter eg. 1d, 123, 33 etc
+			container += 100;		//makes it so that its an invalid answer
+	fflush(stdin);
+	return container;
+}
+
 
 /* 
  *  * Manages the logic of the game
@@ -216,20 +237,21 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 
 void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPlayers)
 {
-	int dice;
-	int person = 0;
-	char movePiece;
+	int dice; //Holds the value of the dice roll
+	int person = 0; //the current player
+	char movePiece; // variable to check whether to user wants to move a piece up or down
 	int i, j;
-	int row, column;
-	int direction;
-	bool validChoice;
-	bool finished = false;
+	int row, column; // holds user input of piece they want to move up or down
+	int direction; // direction the user wants to move
+	bool validChoice; // used to check if the choice the user made is valid
+	bool finished = false; // checking if the game is finished
 	bool check = true;
-	bool possible = false;
-	int choice;
+	bool possible = false; // checking if its possible for the user to move
+	int choice; // olds the user choice
 	int obs[8];
 	
-	srand(time(NULL));
+	srand(time(NULL)); 
+	//printing game start
 	printf("\n");
 	printLine();
 	printf("               GAME START                  \n");
@@ -239,7 +261,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 	while(!finished)
 	{
 		printf("Game squares are represented as (row,column)\n");
-		dice = rand()%6;		
+		dice = rand()%6;		//rlling die
 		printf("%s has rolled row %d\n",players[person].name, dice);
 		
 		fflush(stdin);
@@ -247,6 +269,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 		scanf("%c", &movePiece);
 		possible = false;
 		
+		//runs if the user wants to move up or down
 		if(movePiece == 'y' || movePiece == 'Y')
 		{
 			printf("Select which piece you would like to move\n");
@@ -259,13 +282,14 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 						if(board[i][j].stack->col == players[person].col)
 						{
 							printf("(%d,%d)\n", i, j);
-							possible = true;
+							possible = true; // checks if it is possible to move
 						}
 					}
 					
 				}
 			}
 			
+			//runs if it is possible to move
 			if(!possible)
 			{
 				printf("Whelp -_- looks like you cant even move anything if you try.\nBetter luck next time\n");
@@ -274,16 +298,16 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 			while(!validChoice)
 			{
 				printf("Enter row number\n");
-				scanf("%d", &row);
+				row = checkInput();
 				printf("Enter column number\n");
-				scanf("%d", &column);
+				column = checkInput();
 
 				if(board[row][column].stack == NULL)
 				{
 					printf("This square is empty, try again\n");
 					continue;
 				}
-				else if(board[i][j].type == OBSTACLE)
+				else if(board[row][column].type == OBSTACLE)
 				{
 					puts("This token is stuck in an obstacle and cannot yet be moved");
 					continue;
@@ -299,12 +323,12 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 			}
 			
 			validChoice = false;
-
+			
 			while(!validChoice)	
 			{
 				printf("Would you like to move up or down\n");
 				printf("(1)Up\n(2)Down\n");
-				scanf("%d", &direction);
+				direction = checkInput();
 				switch(direction)
 				{
 					case 1: direction = -1;
@@ -324,7 +348,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 					validChoice = true;
 			}
 
-
+			//moving the location of the token
 			struct token *curr = board[row+direction][column].stack;
 			board[row+direction][column].stack = malloc(sizeof(token));
 			board[row+direction][column].stack->col = players[person].col;
@@ -341,6 +365,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 		}
 		
 		possible = false;
+		//checking if the move is possible
 		for(j=0;j<8;j++)
 		{
 			if(board[dice][j].stack != NULL)
@@ -373,7 +398,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 					}
 					
 					printf("Please enter the column number of the selected token\n");
-					scanf("%d", &choice);
+					choice = checkInput();
 					
 					if(choice < 0 || choice > 7)
 					{
@@ -393,7 +418,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 					}
 				}
 				
-				
+					//moving the location of the token
 				struct token *curr = board[dice][choice+1].stack;
 				board[dice][choice+1].stack = malloc(sizeof(token));
 				board[dice][choice+1].stack->col = board[dice][choice].stack->col;
@@ -406,32 +431,30 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 					free(curre);
 				}
 				
-				if((choice+1) == 8)
+				if((choice+1) == 8) //Checking if the piece is being moved to the final column
 				{
 					for(i=0;i<numPlayers;i++)
 					{
 						if(players[i].col == board[dice][choice+1].stack->col)
 						{
-							players[i].numTokensLastCol += 1;
+							players[i].numTokensLastCol += 1; // Incrementing the value for the number of tokens in the last colour for the relevant user
 						}
 						if(players[i].numTokensLastCol == 3)
 						{
-							finished = true;
+							finished = true; // finishing the game if the user has 3 tokens in the last column
 						}
 					}
 				}
 				
-				printf("%s has moved their piece from (%d,%d) to (%d,%d)\n", players[person].name, row, column, row+direction, column);
+				printf("%s has moved their piece from (%d,%d) to (%d,%d)\n", players[person].name, dice, choice, dice, choice+1);
 				print_board(board);
 		}
+			
+			//Iterating through the players
 			if(person < numPlayers - 1)
-			{
 				person++;
-			}
 			else
-			{
 				person = 0;
-			}
 			
 			for(j=0;j<8;j++)
 			{
