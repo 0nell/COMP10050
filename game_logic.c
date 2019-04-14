@@ -248,7 +248,6 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 	bool check = true;
 	bool possible = false; // checking if its possible for the user to move
 	int choice; // olds the user choice
-	int obs[8];
 	
 	srand(time(NULL)); 
 	//printing game start
@@ -265,14 +264,14 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 		printf("%s has rolled row %d\n",players[person].name, dice);
 		
 		fflush(stdin);
-		printf("Would you like to move one your pieces up or down?(Y/N)\n");
+		printf("\nWould you like to move one your pieces up or down?\nEnter 'y' if yes\nEnter any other key if no\n");
 		scanf("%c", &movePiece);
 		possible = false;
 		
 		//runs if the user wants to move up or down
 		if(movePiece == 'y' || movePiece == 'Y')
 		{
-			printf("Select which piece you would like to move\n");
+			printf("\nSelect which piece you would like to move\n");
 			for(i=0;i<6;i++)
 			{
 				for(j=0;j<8;j++)
@@ -292,7 +291,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 			//runs if it is possible to move
 			if(!possible)
 			{
-				printf("Whelp -_- looks like you cant even move anything if you try.\nBetter luck next time\n");
+				printf("\n\nWhelp -_- looks like you cant even move anything if you try.\nBetter luck next time\n\n");
 			}
 			validChoice = false;
 			while(!validChoice)
@@ -301,8 +300,13 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 				row = checkInput();
 				printf("Enter column number\n");
 				column = checkInput();
-
-				if(board[row][column].stack == NULL)
+				
+				if(row < 0 || row > 5 || column > 7 || column < 0)
+				{
+					printf("The location you have entered is not a square on the board, try again\n");
+					continue;
+				}
+				else if(board[row][column].stack == NULL)
 				{
 					printf("This square is empty, try again\n");
 					continue;
@@ -326,7 +330,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 			
 			while(!validChoice)	
 			{
-				printf("Would you like to move up or down\n");
+				printf("\nWould you like to move up or down\n");
 				printf("(1)Up\n(2)Down\n");
 				direction = checkInput();
 				switch(direction)
@@ -381,13 +385,13 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 		
 		if(!possible)
 		{
-			printf("Sorry no move can be made on that row :((\nBetter luck next time\n");
+			printf("\n\nSorry no move can be made on that row :((\nBetter luck next time\n\n");
 		}
 		else
 		{
 			while(!validChoice)	
 				{
-					printf("Please choose the location of token that you want to move forward\n");
+					printf("\nPlease choose the location of token that you want to move forward\n");
 					
 					for(i=0;i<8;i++)
 					{
@@ -435,12 +439,13 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 				{
 					for(i=0;i<numPlayers;i++)
 					{
-						if(players[i].col == board[dice][choice+1].stack->col)
+						if(players[i].col == board[dice][choice+1].stack->col) // If the player is moving his piece into the last column
 						{
 							players[i].numTokensLastCol += 1; // Incrementing the value for the number of tokens in the last colour for the relevant user
 						}
-						if(players[i].numTokensLastCol == 3)
+						if(players[i].numTokensLastCol == 3)	//If the player has 3 tokens in the last column then the game is over and they win
 						{
+							person = i;      //sets the person variable to i, so that the proper winners name is printed at the end
 							finished = true; // finishing the game if the user has 3 tokens in the last column
 						}
 					}
@@ -450,34 +455,38 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 				print_board(board);
 		}
 			
-			//Iterating through the players
-			if(person < numPlayers - 1)
-				person++;
-			else
-				person = 0;
-			
-			for(j=0;j<8;j++)
+			if(!finished) //if the game is already finished then the rest of the current loop is skipped
 			{
-				check = true;
-				for(i=0;i<6;i++)
+				//Iterating through the players
+				if(person < numPlayers - 1)
 				{
-					if(board[i][j].type == OBSTACLE)
-					{
-						board[i][j].type = NORMAL;
-					}
-					if(board[i][j].stack != NULL)
-					{
-						check = false;
-					}
-				}
-				
-				if(check)
-				{
-					obs[j] = 1;
+					person++;
 				}
 				else
 				{
-					break;
+					person = 0;
+				}
+				
+				/*This next loop updates the obstacle squares to type normal if there are no tokens in the columns behind them*/
+				for(j=0;j<8;j++)	//iterates trough the columns, until there a column is not empty
+				{
+					check = true;
+					for(i=0;i<6;i++) //iterates through the rows
+					{
+						if(board[i][j].type == OBSTACLE) //if the square type is an obstacle, change it to normal 
+						{
+							board[i][j].type = NORMAL;
+						}
+						if(board[i][j].stack != NULL) //if there is a token in the square
+						{
+							check = false;   //check bool is set to false
+						}
+					}
+					
+					if(!check) //If there is a token in the column currently indexed by j then the loop breaks 
+					{
+						break;
+					}
 				}
 			}
 	}	
