@@ -27,10 +27,4 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
  */
 void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPlayers);
 
-/*
- * Checks to make sure integer input is valid and doesn't cause an infinite loop
- * 
- * Output: the user input
- */
 
-int checkInput();

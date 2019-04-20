@@ -93,4 +93,13 @@ int initialize_players(player players[]);
 int chooseColour(int currentPlayer, char colours[][7], char player[]);
 
 
+/*
+ * Checks to make sure integer input is valid and doesn't cause an infinite loop
+ * 
+ * Output: the user input
+ */
+
+int checkInput();
+
+
 

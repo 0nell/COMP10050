@@ -142,13 +142,7 @@ int chooseColour(int currentPlayer, char colours[][7], char player[])
             printf("(%d) %s\n", i+1, colours[i]);
         }
         
-        fgets(check,9,stdin);		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
-		c = check[0];
-		colourIndex = c - '0';
-		if(check[1] != '\n' && check[1] != ' ') //aka if they enter eg. 1d, 123, 33 etc
-		{
-			colourIndex += 100;		//makes it so that its an invalid answer
-		}
+		colourIndex = checkInput();
 					
         //Checking for valid input
         if(colourIndex <= numOfChoices && colourIndex > 0)

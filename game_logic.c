@@ -11,7 +11,14 @@
 #include <stdlib.h>
 #include <time.h>
 
-void printLine();
+
+
+/*
+ * Prints a straight horisontal line across the console
+ */
+void printLine(){
+  printf("   -------------------------------------\n");  
+}
 
 /*
  * Returns the first letter associated with the color of the token
@@ -66,9 +73,29 @@ void print_board(square board[NUM_ROWS][NUM_COLUMNS]){
     printf("     0   1   2   3   4   5   6   7   8\n");
 }
 
-void printLine(){
-  printf("   -------------------------------------\n");  
+ 
+ /*
+ * Checks to make sure integer input is valid and doesn't cause an infinite loop
+ * 
+ * Output: the user input
+ */
+
+int checkInput()
+{
+	fflush(stdin); // flushing the input buffer
+	int container;
+	char check[10];
+	char c;
+	fgets(check,9,stdin);		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
+		c = check[0];
+		container = c - '0';
+		if(check[1] != '\n' && check[1] != ' ') //aka if they enter eg. 1d, 123, 33 etc
+			container += 100;		//makes it so that its an invalid answer
+	fflush(stdin);
+	return container;
 }
+
+
 
 /*
  * Place tokens in the first column of the board
@@ -77,6 +104,7 @@ void printLine(){
  *        players - the array of the players
  *        numPlayers - the number of players  
  */
+ 
 void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPlayers)
 {
 	int tokens_placed; //each player gets 4 tokens
@@ -88,14 +116,14 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 	char colours[][7] = {{"RED"}, {"BLUE"}, {"GREEN"}, {"YELLOW"}, {"PINK"}, {"ORANGE"}}; //colours corresponding to colourindex
 	bool choices;	//used to check whether the exception to the lowest level rule is needed
 	int tokens = 0;	//used to count how many tokens have been placed
-	char check[10]; // used to ensure that input is valid
-	char c;
 	int minLevel; //number of tokens on the minimum level
 	
-	for(tokens_placed=0;tokens_placed < 4;tokens_placed++)  	
+	
+	for(tokens_placed=0;tokens_placed < 4;tokens_placed++)  //iterates through the number of tokens placed by each player,(each player gets to place 4 tokens)
 	{
-		for(person=0;person<numPlayers;person++)				
+		for(person=0;person<numPlayers;person++)			//iterates through the number of players	
 		{
+			print_board(board);		//PRINTS THE BOARD SO PLAYER CAN VIEW IT
 			printf("Please enter the number row you would like to place your token in %s\n", players[person].name);
 			valid = false;	
 			
@@ -111,26 +139,20 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 				valid2 = false;		
 				choices = false;	
 
-				for(i=0;i<6;i++)	{
-				if(board[i][0].numTokens == minLevel && previous[i] != players[person].col) //if square has the least amount of tokens and the previous token is not of the same colour
+				for(i=0;i<6;i++)	
 				{
-					choices = true;		//the exception to the lowest level rule will not be triggered
-					printf("(%d) ROW %d\n", i, i); //prints the rows which can be chosen
-				}
+					if(board[i][0].numTokens == minLevel && previous[i] != players[person].col) //if square has the least amount of tokens and the previous token is not of the same colour
+					{
+						choices = true;		//the exception to the lowest level rule will not be triggered
+						printf("(%d) ROW %d\n", i, i); //prints the rows which can be chosen
+					}
 				}
 				
 				if(choices)	//if the exception to the lowest level rule is not triggered
 				{
-					fgets(check,9,stdin);		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
-					c = check[0];
-					choice = c - '0';
-					if(check[1] != '\n' && check[1] != ' ') //aka if they enter eg. 1d, 123, 33 etc
-					{
-						choice += 100;		//makes it so that its an invalid answer
-					}
+					choice = checkInput();
 					
-					
-					if(choice < 0 || choice > 6 ||  board[choice][0].numTokens != minLevel)  //if the choice is invalid (aka not 0-5 or the square does not have the minimum number of tokesn)
+					if(choice < 0 || choice > 5 ||  board[choice][0].numTokens != minLevel)  //if the choice is invalid (aka not 0-5 or the square does not have the minimum number of tokesn)
 					{
 						printf("Choice is not valid, please enter a number shown above2\n");
 					}
@@ -145,31 +167,18 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 				}
 				else if (!choices) //if the exception to the rule is triggered a person can place their token only a location where taken[] is equal to one and is a location where the previous token is not the same colour
 				{
-					printf("\nPlacing token on a higher level as you cannot place it on your your own token\n"); //informs the user that there token is being placed on a higher level
+					printf("\nSince the minimum level is full of your own colour you can place your token on any square\n"); //informs the user that there token is being placed on a higher level
 					
 					for(i=0;i<6;i++) //iterates through taken[]
 					{
-						if(board[i][0].numTokens > minLevel && previous[i] != players[person].col)//If the number of tokens on that square is higher than the minimum level and the previous token is not of the same colour
-						{
 							printf("(%d) ROW %d\n", i, i); //prints the rows which can be chosen
-						}
 					}
 					
-					fgets(check,9,stdin);		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
-					c = check[0];
-					choice = c - '0';
-					if(check[1] != '\n' && check[1] != ' ') //aka if they enter eg. 1d, 123, 33 etc
-					{
-						choice += 100;		//makes it so that its an invalid answer
-					}
+					choice = checkInput();
 					
-					if(choice < 0 || choice > 6 ||  board[i][0].numTokens == minLevel) //if the choice is invalid(aka chhoice is not 0-5 or is not above the minlevel
+					if(choice < 0 || choice > 5) //if the choice is invalid(aka chhoice is not 0-5 or is not above the minlevel
 					{
 						printf("Choice is not valid, please enter a number shown above\n");
-					}
-					else if(previous[choice] == players[person].col) //if the choice points to a location where the previous is the same as the user who is currently choosing's token
-					{
-						printf("You cannot place a token there as the previous token is the same colour\n");
 					}
 					else
 					{
@@ -191,7 +200,6 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 					board[choice][0].stack->col = players[person].col;
 					board[choice][0].stack->next = curr;  
 
-					print_board(board);						//PRINTS THE BOARD SO PLAYER CAN VIEW IT
 					valid = true;							//exits loop as valid choice entered
 					tokens++;								//COUNTS THE AMOUNT OF TOKENS PLACED
 					printf("%d tokens placed\n", tokens);	//PRINTS THE AMOUNT OF TOKENS PLACED
@@ -203,29 +211,6 @@ void place_tokens(square board[NUM_ROWS][NUM_COLUMNS], player players[], int num
 	}
 					
 }
-
-
-/*
- * Checks to make sure integer input is valid and doesn't cause an infinite loop
- * 
- * Output: the user input
- */
-
-int checkInput()
-{
-	fflush(stdin); // flushing the input buffer
-	int container;
-	char check[10];
-	char c;
-	fgets(check,9,stdin);		//MAKES SURE THAT INPUT OF STRINGS OR CHARACTERS DOES NOT CAUSE ERROR OF INFINITE LOOP
-		c = check[0];
-		container = c - '0';
-		if(check[1] != '\n' && check[1] != ' ') //aka if they enter eg. 1d, 123, 33 etc
-			container += 100;		//makes it so that its an invalid answer
-	fflush(stdin);
-	return container;
-}
-
 
 /* 
  *  * Manages the logic of the game
@@ -249,7 +234,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 	bool possible = false; // checking if its possible for the user to move
 	int choice; // olds the user choice
 	
-	srand(time(NULL)); 
+	srand(time(NULL)); //randomises the seed for the random number generator
 	//printing game start
 	printf("\n");
 	printLine();
@@ -259,14 +244,14 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 	
 	while(!finished)
 	{
-		printf("Game squares are represented as (row,column)\n");
-		dice = rand()%6;		//rlling die
-		printf("%s has rolled row %d\n",players[person].name, dice);
+		printf("Game squares are represented as (row,column)\n");	//alerts user of the format of the square co-ordinates
+		dice = rand()%6;		//rolling die
+		printf("%s has rolled row %d\n",players[person].name, dice); //alerts user to their dice result
 		
-		fflush(stdin);
-		printf("\nWould you like to move one your pieces up or down?\nEnter 'y' if yes\nEnter any other key if no\n");
-		scanf("%c", &movePiece);
-		possible = false;
+		fflush(stdin);//flushes the standard input
+		printf("\nWould you like to move one your pieces up or down?\nEnter 'y' if yes\nEnter any other key if no\n");	//prompts user to enter a character and choose whether to move up/down or leave their pieces in the same rows
+		scanf("%c", &movePiece);	//takes user input 
+		possible = false; //resets possible to false
 		
 		//runs if the user wants to move up or down
 		if(movePiece == 'y' || movePiece == 'Y')
@@ -276,11 +261,11 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 			{
 				for(j=0;j<8;j++)
 				{
-					if(board[i][j].stack != NULL && board[i][j].type != OBSTACLE)
+					if(board[i][j].stack != NULL && board[i][j].type != OBSTACLE)	//if the square is not empty and is not an obstacle square
 					{
-						if(board[i][j].stack->col == players[person].col)
+						if(board[i][j].stack->col == players[person].col)	//if the colour token in the square is the players token
 						{
-							printf("(%d,%d)\n", i, j);
+							printf("(%d,%d)\n", i, j);	//prints the co-ordinates of the square which can be moved
 							possible = true; // checks if it is possible to move
 						}
 					}
