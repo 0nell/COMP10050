@@ -279,6 +279,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 				printf("\n\nWhelp -_- looks like you cant even move anything if you try.\nBetter luck next time\n\n");
 			}
 			validChoice = false;
+			//loops around until a player chooses their own token
 			while(!validChoice)
 			{
 				printf("Enter row number\n");
@@ -286,21 +287,25 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 				printf("Enter column number\n");
 				column = checkInput();
 				
+				//checks if the selected location is outside the grid
 				if(row < 0 || row > 5 || column > 7 || column < 0)
 				{
 					printf("The location you have entered is not a square on the board, try again\n");
 					continue;
 				}
+				//checks if the selectec square is empty
 				else if(board[row][column].stack == NULL)
 				{
 					printf("This square is empty, try again\n");
 					continue;
 				}
+				//player cannot move if the object is tuck on an obtacle
 				else if(board[row][column].type == OBSTACLE)
 				{
 					puts("This token is stuck in an obstacle and cannot yet be moved");
 					continue;
 				}
+				//user cannot move if the slected token is not their own
 				else if(board[row][column].stack->col != players[person].col)
 					{
 						printf("Your token is not on top of this square\n");
@@ -313,11 +318,13 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 			
 			validChoice = false;
 			
+			//checking if the user's movement direction is valid
 			while(!validChoice)	
 			{
 				printf("\nWould you like to move up or down\n");
 				printf("(1)Up\n(2)Down\n");
 				direction = checkInput();
+				//changing the direction -1 is up 1 is down and invalid is 6 , the automatically makes the next if statement valid
 				switch(direction)
 				{
 					case 1: direction = -1;
@@ -327,7 +334,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 					default: direction = 6;
 						break;
 				}
-			
+			//checks if the user is trying to move out of the board
 				if(row+direction > 5 || row+direction < 0)
 					{
 						printf("Cant move there, outside the board\n");
@@ -378,6 +385,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 				{
 					printf("\nPlease choose the location of token that you want to move forward\n");
 					
+					//printing valid options
 					for(i=0;i<8;i++)
 					{
 						if(board[dice][i].stack != NULL && board[dice][i].type != OBSTACLE)
@@ -388,7 +396,7 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 					
 					printf("Please enter the column number of the selected token\n");
 					choice = checkInput();
-					
+					//checks if the the input is on the board, not empty
 					if(choice < 0 || choice > 7)
 					{
 						puts("ERROR INVALID INPUT :choice is not a square on the board\n");
@@ -484,12 +492,3 @@ void play_game(square board[NUM_ROWS][NUM_COLUMNS], player players[], int numPla
 }
 
 
-
-/*pop
-struct token *curr = board[4][0].stack;
-if(curr!=NULL){
-	board[4][0].stack = curr->next;
-	
-	free(curr);
-}
-print_board(board);	*/
